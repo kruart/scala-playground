@@ -29,7 +29,6 @@ class Mkdir(name: String) extends Command {
         val oldEntry = currentDir.findEntry(path.head).asDirectory
         currentDir.replaceEntry(oldEntry.name, updateStructure(oldEntry, path.tail, newEntry))
       }
-
     }
 
     val wd = state.wd
