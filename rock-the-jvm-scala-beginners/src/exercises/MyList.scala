@@ -132,4 +132,11 @@ object ListTest extends App {
   println(anotherListOfIntegers.zipWith[String, String](listOfString, _ + "-" + _))
 
   println(listOfIntegers.fold(0)(_ + _))
+
+  // for comprehensions
+  val forValues = for {
+    n <- listOfIntegers
+    string <- listOfString
+  } yield n + "-" + string
+  println(forValues)
 }
