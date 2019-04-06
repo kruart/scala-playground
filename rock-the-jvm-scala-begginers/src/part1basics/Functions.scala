@@ -47,9 +47,9 @@ object Functions extends App {
   // 2
   def factorial(n: Int): Int = {
     @tailrec
-    def _factorial(n: Int, acc: Int = 1): Int = {
-      if (n <= 0) return acc
-      _factorial(n - 1, acc * n)
+    def _factorial(x: Int, acc: Int = 1): Int = {
+      if (x <= 0) return acc
+      _factorial(x - 1, acc * x)
     }
     _factorial(n)
   }
@@ -58,10 +58,10 @@ object Functions extends App {
   // 3
   def fibonacci(n: Int): Int = {
     @tailrec
-    def _fib(n: Int, prev: Int = 0, next: Int = 1): Int = n match{
+    def _fib(x: Int, prev: Int = 0, next: Int = 1): Int = x match{
       case 0 => prev
       case 1 => next
-      case _ => _fib(n - 1, next, next + prev)
+      case _ => _fib(x - 1, next, next + prev)
     }
     _fib(n)
   }
