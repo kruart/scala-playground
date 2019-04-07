@@ -1,8 +1,15 @@
+enablePlugins(JavaAppPackaging, AshScriptPlugin)
+
 name := "akka-http-quickstart"
 
 version := "0.1"
 
 scalaVersion := "2.12.8"
+
+dockerBaseImage := "openjdk:8-jre-alpine"
+packageName in Docker := "akka-http-quickstart"
+daemonUserUid in Docker := None
+daemonUser in Docker := "daemon"
 
 libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-actor" % "2.5.22",

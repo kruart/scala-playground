@@ -23,6 +23,17 @@ class TodoRouter(todoRepository: TodoRepository) extends Router with Directives 
           }
         }
       }
+    } ~ path( Segment ) { id: String =>
+      put {
+        entity(as[UpdateTodo]) { updateTodo =>
+          validateWith(UpdateTodoValidator)(updateTodo) {
+            handle(todoRepository.update(id, updateTodo)) {
+              case TodoRepository.TodoNotFound(_) => ApiError.todoNotFound(id)
+              case _ => ApiError.generic
+            } {todo => complete(todo)}
+          }
+        }
+      }
     } ~ path("done") {
       get {
         handleWithGeneric(todoRepository.done()) { todos =>
