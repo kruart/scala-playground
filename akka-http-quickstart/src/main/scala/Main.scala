@@ -14,15 +14,14 @@ object Main extends App {
   implicit val materializer: ActorMaterializer = ActorMaterializer()
   import system.dispatcher
 
-  import akka.http.scaladsl.server.Directives._
+  val todoRepository = new InMemoryTodoRepository(Seq(
+    Todo("1", "Buy eggs", "Ran out of eggs", false),
+    Todo("2", "Buy milk", "The cat is thirsty!", true),
+  ))
+  val router = new TodoRouter(todoRepository)
+  val server = new Server(router, host, port)
 
-  def route = path("hello") {
-    get {
-      complete("Hello, World")
-    }
-  }
-
-  val binding = Http().bindAndHandle(route, host, port)
+  val binding = server.bind()
   binding.onComplete {
     case Success(_) => println("Success!")
     case Failure(error) => println(s"Failed: ${error.getMessage}")
