@@ -1,6 +1,6 @@
 package lectures.part4pm
 
-import exercises.{Empty}
+import exercises.{Cons, Empty, MyList}
 
 object AllThePatterns extends App {
   // 1 - constants
