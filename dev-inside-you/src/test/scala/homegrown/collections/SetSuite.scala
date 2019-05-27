@@ -1,7 +1,6 @@
 package homegrown.collections
 
 import org.scalatest._
-
 import scala.util.Random
 
 class SetSuite extends FunSuite with Matchers {
@@ -9,6 +8,7 @@ class SetSuite extends FunSuite with Matchers {
 
   test("apply on an empty Set should yield false") {
     Set.empty(randomString) shouldBe false
+    Set.empty.size shouldBe 0
   }
 
   test("add on an empty Set should yield a new Set with one element") {
@@ -22,7 +22,7 @@ class SetSuite extends FunSuite with Matchers {
     set(second) shouldBe false
   }
 
-  test("add on a non empty Set should yield a new Set with two elements") {
+  test("add on a non empty Set should yieald a new Set with two elements") {
     val first = randomString
     val second = randomString
 
@@ -35,14 +35,12 @@ class SetSuite extends FunSuite with Matchers {
   test("remove on an empty Set should yield an empty Set") {
     val element = randomString
     val stillEmpty = Set.empty.remove(element)
-
     stillEmpty(element) shouldBe false
   }
 
   test("remove on a non empty Set should yield a new Set without the element") {
     val element = randomString
-    val setWithElement = Set(element, element)
-
+    val setWithElement = Set(element)
     setWithElement(element) shouldBe true
 
     val setWithoutElement = setWithElement.remove(element)
@@ -62,7 +60,7 @@ class SetSuite extends FunSuite with Matchers {
     setWithoutElement(second) shouldBe true
   }
 
-  test("remove removes only the element in question ordering test") {
+  test("remove removes only the element in question (ordering test)") {
     val first = randomString
     val second = randomString
 
@@ -91,7 +89,7 @@ class SetSuite extends FunSuite with Matchers {
 
     first should not be second
 
-    val emptySet = Set.empty
+    val emptySet = Set.empty[String]
     val nonEmptySet = Set(first, second)
     emptySet.union(nonEmptySet)(first) shouldBe true
     emptySet.union(nonEmptySet)(second) shouldBe true
@@ -100,21 +98,22 @@ class SetSuite extends FunSuite with Matchers {
     nonEmptySet.union(emptySet)(second) shouldBe true
   }
 
-  test("union on two non empty Sets should yield their union ") {
+  test("union on two non empty Sets should yield their union") {
     val a = randomString
     val b = randomString
     val c = randomString
     val d = randomString
 
     val left = Set(a, b)
-    val right = Set(d, c)
+    val right = Set.empty.add(c).add(d)
 
-    left.union(right) shouldBe Set(a, b, c, d)
-    right.union(left) shouldBe Set(a, b, c, d)
+    left.union(right) shouldBe Set(a, b, c).add(d)
+    right.union(left) shouldBe Set(a, b, c).add(d)
+
   }
 
   test("intersection on empty Set should yield an empty Set") {
-    Set.empty.intersection(Set.empty)(randomString) shouldBe false
+    Set.empty[String].intersection(Set.empty)(randomString) shouldBe false
   }
 
   test("intersection on a non empty Set with an empty Set should yield an empty Set") {
@@ -123,7 +122,7 @@ class SetSuite extends FunSuite with Matchers {
 
     first should not be second
 
-    val emptySet = Set.empty
+    val emptySet = Set.empty[String]
     val nonEmptySet = Set(first, second)
     emptySet.intersection(nonEmptySet)(first) shouldBe false
     emptySet.intersection(nonEmptySet)(second) shouldBe false
@@ -139,14 +138,14 @@ class SetSuite extends FunSuite with Matchers {
     val d = randomString
 
     val left = Set(a, b, c)
-    val right = Set(b, d, c)
+    val right = Set(b, c, d)
 
     left.intersection(right) shouldBe Set(b, c)
     right.intersection(left) shouldBe Set(b, c)
   }
 
   test("difference on empty Set should yield an empty Set") {
-    Set.empty.difference(Set.empty)(randomString) shouldBe false
+    Set.empty[String].difference(Set.empty)(randomString) shouldBe false
   }
 
   test("difference on a non empty Set with an empty Set should yield an empty Set") {
@@ -155,7 +154,7 @@ class SetSuite extends FunSuite with Matchers {
 
     first should not be second
 
-    val emptySet = Set.empty
+    val emptySet = Set.empty[String]
     val nonEmptySet = Set(first, second)
     emptySet.difference(nonEmptySet)(first) shouldBe false
     emptySet.difference(nonEmptySet)(second) shouldBe false
@@ -171,10 +170,10 @@ class SetSuite extends FunSuite with Matchers {
     val d = randomString
 
     val left = Set(a, b, c)
-    val right = Set(b, d, c)
+    val right = Set(b, c, d)
 
     left.difference(right) shouldBe Set(a)
-    right.difference(left) shouldBe Set.empty.add(d)
+    right.difference(left) shouldBe Set(d)
   }
 
   test("isSubsetOf on an empty Set should yield true") {
@@ -228,15 +227,14 @@ class SetSuite extends FunSuite with Matchers {
 
     val element = randomString
 
-    Set(element, element).hashCode shouldBe Set(element, element).hashCode
+    Set(element).hashCode shouldBe Set(element).hashCode
   }
 
   test("hashCode on an empty Set should not be 0") {
     Set.empty.hashCode should not be 0
   }
 
-  test("hashCode on a non empty Set " +
-    "should be the sum of all the hashCodes and the hashCode of the empty Set") {
+  test("hashCode on a non empty Set should be the sum of all the hashCodes and the hashCode of the empty Set") {
     val first = randomString
     val second = randomString
 
@@ -265,7 +263,7 @@ class SetSuite extends FunSuite with Matchers {
   test("size on a non empty Set with 2 equal elements added should be 1") {
     val element = randomString
 
-    Set(element, element).add(element).size shouldBe 1
+    Set(element, element).size shouldBe 1
   }
 
   test("isEmpty on an empty Set should yield true") {
@@ -299,56 +297,10 @@ class SetSuite extends FunSuite with Matchers {
     Set.empty.sample shouldBe None
 
     val a = randomString
-    Set(a).sample shouldBe Some(a)
+    Set.empty.add(a).sample shouldBe Some(a)
 
     val b = randomString
     Set(a, b).sample should contain oneOf (a, b)
-  }
-
-  test("foreach on an empty Set should not apply the function") {
-    noException should be thrownBy Set.empty.foreach(_ => sys.error("should not be thrown"))
-  }
-
-  test("foreach on a non empty Set should apply the function") {
-    var functionWasApplied = false
-    Set(randomString).foreach(_ => functionWasApplied = true)
-    functionWasApplied shouldBe true
-  }
-
-  test("foreach should be able to calculate the size of the given set 0") {
-    var size = 0
-    val set = Set.empty
-    set.foreach(_ => size += 1)
-    size shouldBe 0
-    size shouldBe set.size
-  }
-
-  test("foreach should be able to calculate the size of the given set 1") {
-    var size = 0
-    val set = Set(randomString)
-
-    set.foreach(_ => size += 1)
-    size shouldBe 1
-    size shouldBe set.size
-  }
-
-  test("foreach should be able to calculate the size of the given set 2") {
-    var size = 0
-    val set = Set(randomString, randomString)
-
-    set.foreach(_ => size += 1)
-    size shouldBe 2
-    size shouldBe set.size
-  }
-
-  test("foreach should be able to calculate the size of the given set 3") {
-    var size = 0
-    val element = randomString
-    val set = Set(element, element).add(element)
-
-    set.foreach(_ => size += 1)
-    size shouldBe 1
-    size shouldBe set.size
   }
 
   test("Set() should not compile") {
@@ -361,5 +313,85 @@ class SetSuite extends FunSuite with Matchers {
     val c = randomString
 
     Set(a, b, c) shouldBe Set.empty.add(a).add(b).add(c)
+  }
+
+  test("foreach on an empty Set should not apply the function") {
+    noException should be thrownBy Set.empty[String].foreach(_ => sys.error("should not be thrown"))
+  }
+
+  test("foreach on a non empty Set should apply the function") {
+    var functionWasApplied = false
+    Set(randomString).foreach(_ => functionWasApplied = true)
+    functionWasApplied shouldBe true
+  }
+
+  test("foreach should be able to calculate the size of the given set 0") {
+    var size = 0
+    val set = Set.empty
+    set.foreach(_ => size += 1)
+
+    size shouldBe 0
+    size shouldBe set.size
+  }
+
+  test("foreach should be able to calculate the size of the given set 1") {
+    var size = 0
+    val set = Set(randomString)
+    set.foreach(_ => size += 1)
+
+    size shouldBe 1
+    size shouldBe set.size
+  }
+
+  test("foreach should be able to calculate the size of the given set 2") {
+    var size = 0
+    val set = Set(randomString).add(randomString)
+    set.foreach(_ => size += 1)
+
+    size shouldBe 2
+    size shouldBe set.size
+  }
+
+  test("foreach should be able to calculate the size of the given set 3") {
+    var size = 0
+    val element = randomString
+    val set = Set(element, element)
+
+    set.foreach(_ => size += 1)
+
+    size shouldBe 1
+    size shouldBe set.size
+  }
+
+  test("foreach should be parameterized in the result of the argument function so that it does not produce warnings") {
+    Set.empty[String].foreach(_ => 1)
+  }
+
+  test("map on an empty Set should not apply the function") {
+    noException should be thrownBy Set.empty[String].map(_ => sys.error("should not be thrown"))
+  }
+
+  test("map should produce a Set") {
+    Set("hello", "world").map(_.reverse) shouldBe Set("dlrow", "olleh")
+  }
+
+  test("map should be able to produce a Set of sth else other than String") {
+    Set("hello", "planet").map(_.size) shouldBe Set(5, 6)
+
+    Set("hello", "world").map(_.size) shouldBe Set(5)
+  }
+
+  test("flatMap should be able to produce a chessboard") {
+    val characters = Set('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h')
+    val numbers = Set(1, 2, 3, 4, 5, 6, 7, 8)
+
+    val chessboard: Set[(Char, Int)] =
+      characters.flatMap { c =>
+        numbers.map { n =>
+          c -> n
+        }
+      }
+
+    chessboard.size shouldBe 64
   }
 }
