@@ -105,15 +105,15 @@ class SetSuite extends FunSuite with Matchers {
     val d = randomString
 
     val left = Set(a, b)
-    val right = Set.empty.add(c).add(d)
+    val right = Set(c, d)
 
-    left.union(right) shouldBe Set(a, b, c).add(d)
-    right.union(left) shouldBe Set(a, b, c).add(d)
+    left.union(right) shouldBe Set(a, b, c, d)
+    right.union(left) shouldBe Set(a, b, c, d)
 
   }
 
   test("intersection on empty Set should yield an empty Set") {
-    Set.empty[String].intersection(Set.empty)(randomString) shouldBe false
+    Set.empty.intersection(Set.empty) shouldBe Set.empty
   }
 
   test("intersection on a non empty Set with an empty Set should yield an empty Set") {
@@ -145,7 +145,7 @@ class SetSuite extends FunSuite with Matchers {
   }
 
   test("difference on empty Set should yield an empty Set") {
-    Set.empty[String].difference(Set.empty)(randomString) shouldBe false
+    Set.empty.difference(Set.empty) shouldBe Set.empty
   }
 
   test("difference on a non empty Set with an empty Set should yield an empty Set") {
