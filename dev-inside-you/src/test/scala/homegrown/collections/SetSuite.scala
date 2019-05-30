@@ -79,6 +79,11 @@ class SetSuite extends FunSuite with Matchers {
     set(element) shouldBe false
   }
 
+  test("remove should remove elements from both sides of the tree") {
+    Set(1, 2, 3).remove(3) shouldBe Set(1, 2)
+    Set(1, -2, -3).remove(-3) shouldBe Set(1, -2)
+  }
+
   test("union on empty Set should yield an empty Set") {
     Set.empty.union(Set.empty) shouldBe Set.empty
   }
@@ -105,10 +110,10 @@ class SetSuite extends FunSuite with Matchers {
     val d = randomString
 
     val left = Set(a, b)
-    val right = Set(c, d)
+    val right = Set.empty.add(c).add(d)
 
-    left.union(right) shouldBe Set(a, b, c, d)
-    right.union(left) shouldBe Set(a, b, c, d)
+    left.union(right) shouldBe Set(a, b, c).add(d)
+    right.union(left) shouldBe Set(a, b, c).add(d)
   }
 
   test("union with variance") {
@@ -124,6 +129,9 @@ class SetSuite extends FunSuite with Matchers {
 
     Set.empty.filter(Set.empty) shouldBe Set.empty
     Set.empty.filter(_ => false) shouldBe Set.empty
+
+    Set.empty.filterNot(Set.empty) shouldBe Set.empty
+    Set.empty.filterNot(_ => false) shouldBe Set.empty
   }
 
   test("intersection on a non empty Set with an empty Set should yield an empty Set") {
@@ -134,11 +142,20 @@ class SetSuite extends FunSuite with Matchers {
 
     val emptySet = Set.empty
     val nonEmptySet = Set(first, second)
+
     emptySet.intersection(nonEmptySet)(first) shouldBe false
     emptySet.intersection(nonEmptySet)(second) shouldBe false
+    emptySet.filter(nonEmptySet)(first) shouldBe false
+    emptySet.filter(nonEmptySet)(second) shouldBe false
+    emptySet.filterNot(nonEmptySet)(first) shouldBe false
+    emptySet.filterNot(nonEmptySet)(second) shouldBe false
 
     nonEmptySet.intersection(emptySet)(first) shouldBe false
     nonEmptySet.intersection(emptySet)(second) shouldBe false
+    nonEmptySet.filter(emptySet)(first) shouldBe false
+    nonEmptySet.filter(emptySet)(second) shouldBe false
+    nonEmptySet.filterNot(emptySet)(first) shouldBe true
+    nonEmptySet.filterNot(emptySet)(second) shouldBe true
   }
 
   test("intersection on two non empty Sets should yield their intersection") {
@@ -166,6 +183,7 @@ class SetSuite extends FunSuite with Matchers {
 
     val emptySet = Set.empty
     val nonEmptySet = Set(first, second)
+
     emptySet.difference(nonEmptySet)(first) shouldBe false
     emptySet.difference(nonEmptySet)(second) shouldBe false
 
@@ -599,6 +617,10 @@ class SetSuite extends FunSuite with Matchers {
     actual should include(second)
     actual should include(third)
     actual.count(_ == '}') shouldBe 1
+  }
+
+  test("toString should not produce any commas with leading spaces") {
+    Set(1, 0).toString should not include (" ,")
   }
 
   private def bothRoles: (Employee, Consultant) = randomEmployee -> randomConsultant
